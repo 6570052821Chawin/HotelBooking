@@ -3,9 +3,10 @@ const {getHotels, getHotel, createHotel, updateHotel, deleteHotel} = require('..
 
 const router = express.Router();
 
-const {protect} = require('../middleware/auth');
+const {protect, authorize} = require('../middleware/auth');
 
-router.route('/').get(getHotels).post(protect, createHotel);
-router.route('/:id').get(getHotel).put(protect, updateHotel).delete(protect, deleteHotel);
+//!ใน authorize ให้ใส่ role ที่ต้องการทำ ดูได้ใน Model User
+router.route('/').get(getHotels).post(protect, authorize('admin'), createHotel);
+router.route('/:id').get(getHotel).put(protect, authorize('admin'), updateHotel).delete(protect, authorize('admin'), deleteHotel);
 
 module.exports = router;
