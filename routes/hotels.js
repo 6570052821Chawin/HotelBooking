@@ -3,7 +3,9 @@ const {getHotels, getHotel, createHotel, updateHotel, deleteHotel} = require('..
 
 const router = express.Router();
 
-router.route('/').get(getHotels).post(createHotel);
-router.route('/:id').get(getHotel).put(updateHotel).delete(deleteHotel);
+const {protect} = require('../middleware/auth');
+
+router.route('/').get(getHotels).post(protect, createHotel);
+router.route('/:id').get(getHotel).put(protect, updateHotel).delete(protect, deleteHotel);
 
 module.exports = router;
