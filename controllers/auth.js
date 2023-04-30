@@ -85,7 +85,7 @@ const sendTokenResponse = (user, statusCode, res) => {
 //@route    POST /api/v1/auth/me
 //@access   Private
 exports.getMe = async(req, res, next) => {
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.user.id).populate('hotels').populate('reservations');
     res.status(200).json({
         success: true,
         data: user

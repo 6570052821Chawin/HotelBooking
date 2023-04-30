@@ -1,20 +1,18 @@
 const express = require('express');
-const {register, login, getMe} = require('../controllers/auth');
+const {getUsers, getUser, deleteUser} = require('../controllers/user');
 
 //Include other resource routers
 const hotelRouter = require('./hotels')
 
 const router = express.Router();
 
-const {protect} = require('../middleware/auth')
+const {protect, authorize} = require('../middleware/auth')
 
 //Re-route into other resource routers
 router.use('/:userId/hotels', hotelRouter);
 
-//Path register และส่งต่อไปให้ method register ที่ require มาจาก controllers
-router.post('/register', register);
-router.post('/login', login);
-router.get('/me', protect, getMe);
+router.route('/').get(protect, authorize('admin'), getUsers)
+router.route('/:id').get(protect, authorize('admin'), getUser).delete(protect, authorize('admin'), deleteUser)
 
 //export ให้เรียกใช้ router ของเราได้ด้วย
 module.exports = router;

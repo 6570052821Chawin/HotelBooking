@@ -30,6 +30,25 @@ const UserSchema = new mongoose.Schema({
         type: Date,
         default:Date.now
     }
+}, {
+    toJSON: {virtuals: true},
+    toObject: {virtuals: true}
+});
+
+//Reverse populate with virtuals
+UserSchema.virtual('hotels', {
+    ref: 'Hotel',
+    localField: '_id',
+    foreignField: 'user',
+    justOne: false
+});
+
+//Reverse populate with virtuals
+UserSchema.virtual('reservations', {
+    ref: 'Reservation',
+    localField: '_id',
+    foreignField: 'user',
+    justOne: false
 });
 
 //Encrypt password using bcrypt
