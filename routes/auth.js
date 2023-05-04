@@ -1,5 +1,5 @@
 const express = require('express');
-const {register, login, getMe} = require('../controllers/auth');
+const {register, login, getMe, logout} = require('../controllers/auth');
 
 //Include other resource routers
 const hotelRouter = require('./hotels')
@@ -15,6 +15,7 @@ router.use('/:userId/hotels', hotelRouter);
 router.post('/register', register);
 router.post('/login', login);
 router.get('/me', protect, getMe);
+router.get('/logout', logout);
 
 //export ให้เรียกใช้ router ของเราได้ด้วย
 module.exports = router;

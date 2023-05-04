@@ -37,6 +37,11 @@ exports.login = async(req, res, next) => {
         return res.status(400).json({success: false, msg: 'Please provide an email and password'});
     }
 
+    //เช็คว่า email เป็น string ใช่ไหม ไม่ได้ Injection มา
+    if(typeof email !== 'string') {
+        return res.status(400).json({success: false, msg: "Cannot convert email or password to string"})
+    }
+
     //Check for user หา email และ select password ที่ตรงกันมาด้วย
     const user = await User.findOne({email}).select('+password');
 
@@ -76,6 +81,11 @@ const sendTokenResponse = (user, statusCode, res) => {
 
     res.status(statusCode).cookie('token', token, options).json({
         success: true,
+        //add for frontend
+        _id:user._id,
+        name: user.name,
+        email: user.email,
+        //end for frontend
         token
     })
 }
@@ -91,3 +101,19 @@ exports.getMe = async(req, res, next) => {
         data: user
     });
 };
+
+//@desc     Log user out / clear cookie
+//@route    GET /api/v1/auth/logout
+//@access   Private
+exports.logout = async(req, res, next) => {
+    //set cookie token ให้เป็น none เพื่อลบ cookie ออก
+    res.cookie('token', 'none', {
+        expires: new Date(Date.now() + 10 * 1000),
+        httpOnly: true
+    });
+
+    res.status(200).json({
+        success: true,
+        data: {}
+    })
+}

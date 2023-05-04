@@ -13,7 +13,8 @@ exports.protect = async(req, res, next) => {
     }
 
     //Make sure token exist
-    if(!token) {
+    // token =='null' เพื่อเช็คว่าเปฯ null หรือไม่
+    if(!token || token == 'null') {
         return res.status(401).json({success: false, msg: 'Not authorize to access this route'});
     }
 
