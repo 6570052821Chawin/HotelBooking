@@ -77,14 +77,22 @@ exports.addReservation = async(req, res, next) => {
             return res.status(400).json({success: false, message: "Checkout date is greater than checkin date"})
         }
 
+        // Reservation book upto 3 nights
+        let diffDate = outDate - inDate
+        let dayDiff = diffDate / (1000 * 60 * 60 * 24);
+        console.log(`Night diff: ${dayDiff}`)
+        if(dayDiff > 3) {
+            return res.status(400).json({success: false, message: `This reservation is ${dayDiff} nights. The reservation can reserve upto 3 night.`})        
+        }
+
         //add user Id into req.user
         //ใน body ของ postman ให้เอาออก เพราะรับค่ามาจาก req.user.id เรียบร้อย
         req.body.user = req.user.id;
         //Check for existed reservation
-        const existedReservations = await Reservation.find({user: req.user.id});
-        if(existedReservations.length >= 3 && req.user.role !== 'admin') {
-            return res.status(400).json({success: false, message: `The user with ID ${req.user.id} has already made 3 reservations`})
-        }
+        // const existedReservations = await Reservation.find({user: req.user.id});
+        // if(existedReservations.length >= 3 && req.user.role !== 'admin') {
+        //     return res.status(400).json({success: false, message: `The user with ID ${req.user.id} has already made 3 reservations`})
+        // }
 
         console.log(req.body)
         //req.body จะมีส่วนต่างๆที่ใส่ไว้ รวมถึง hotel
