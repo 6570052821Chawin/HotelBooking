@@ -6,11 +6,12 @@ const User = require('../models/User')
 
 exports.register = async(req, res, next) => {
     try {
-        const {name, email, password, role} = req.body;
+        const {name, tel, email, password, role} = req.body;
 
         //Create user
         const user = await User.create({
             name,
+            tel,
             email,
             password,
             role
@@ -84,6 +85,7 @@ const sendTokenResponse = (user, statusCode, res) => {
         //add for frontend
         _id:user._id,
         name: user.name,
+        tel: user.tel,
         email: user.email,
         //end for frontend
         token

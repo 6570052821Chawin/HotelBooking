@@ -144,14 +144,24 @@ exports.updateHotel = (req, res, next) => {
 
 exports.updateHotel = async(req, res, next) => {
     try {
-        const hotel = await Hotel.findByIdAndUpdate(req.params.id, req.body, {
-            new: true,
-            runValidators: true
-        });
+        // แปลงให้เป็น Type.Object
+        var id = req.params.id
+        id = new ObjectId(id)
+        const hotel = await Hotel.findById(id);
 
         if(!hotel) {
             res.status(400).json({success: false, error: err});
         }
+
+        //Make sure user it the reservation owner
+        if(hotel.user.toString() !== req.user.id && req.user.role !== 'admin') {
+            return res.status(401).json({success: false, message: `User ${req.user.id} is not authorized to delete this hotel`})
+        }
+
+        hotel = await Hotel.findByIdAndUpdate(req.params.id, req.body, {
+            new: true,
+            runValidators: true
+        });
 
         res.status(200).json({success: true, data: hotel});
     } catch(err) {
@@ -169,10 +179,15 @@ exports.deleteHotel = async(req, res, next,) => {
         // แปลงให้เป็น Type.Object
         var id = req.params.id
         id = new ObjectId(id)
-        const hotel = await Hotel.find({_id: id});
+        const hotel = await Hotel.findById(id);
 
         if(!hotel) {
             res.status(400).json({success: false, message: 'Cannot find hotel'});
+        }
+
+        //Make sure user it the reservation owner
+        if(hotel.user.toString() !== req.user.id && req.user.role !== 'admin') {
+            return res.status(401).json({success: false, message: `User ${req.user.id} is not authorized to delete this hotel`})
         }
         await Reservation.deleteMany({hotel: id});
         await Hotel.deleteOne({_id: id});
