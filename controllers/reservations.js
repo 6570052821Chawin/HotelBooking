@@ -6,6 +6,7 @@ const Hotel = require('../models/Hotel');
 //@access   Private
 exports.getReservations = async(req, res, next) => {
     let query;
+    console.log(req.user.role)
     //User and hotel owner can see booking reservation
     if(req.user.role !== 'admin') {
         // Populate เพื่อดึงข้อมูลอื่นๆขึ้นมาโชว์ด้วย ดูได้จาก response บน postman
@@ -13,7 +14,14 @@ exports.getReservations = async(req, res, next) => {
             path: 'hotel',
             select: 'name province tel'
         });
-    } else { //Admin can see every reservations
+    }
+    if(req.user.role == 'hOwner') {
+        let hotel = Hotel.find({user: req.user.id})
+        query = Hotel.find({user: req.user.id}).populate({
+            path: 'reservations',
+            select: 'inDate outDate'
+        })
+    }if(req.user.role == 'admin') { //Admin can see every reservations
         query = Reservation.find().populate({
             path: 'hotel',
             select: 'name province tel'
@@ -40,6 +48,8 @@ exports.getReservations = async(req, res, next) => {
 //@access   Private
 exports.getReservation = async(req, res, next) => {
     try {
+
+        
         const reservation = await Reservation.findById(req.params.id).populate({
             path: 'hotel',
             select: 'name description tel'
@@ -60,7 +70,7 @@ exports.getReservation = async(req, res, next) => {
 }
 
 //@desc     Add reservation
-//@route    POST /api/v1/hotels/:hptelId/reservation
+//@route    POST /api/v1/hotels/:hotelId/reservation
 //@access   Private
 exports.addReservation = async(req, res, next) => {
     try {

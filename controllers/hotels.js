@@ -29,8 +29,8 @@ exports.getHotels = async(req, res, next) => {
         queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`);
 
         query = Hotel.find(JSON.parse(queryStr))
-                    .populate('reservations')
-                    .populate({path: 'user', select: 'name email'})
+                    // .populate('reservations')
+                    // .populate({path: 'user', select: 'name email'})
 
         //Select Fields
         if(req.query.select) {
@@ -137,9 +137,7 @@ exports.createHotel = async(req, res, next) => {
 //@desc     Update hotel
 //@route    /api/v1/hotels/:id
 //@access   public
-exports.updateHotel = (req, res, next) => {
-    res.status(200).json({success: true, msg: `Update hotel ${req.params.id}`});
-};
+
 
 
 exports.updateHotel = async(req, res, next) => {
@@ -147,10 +145,11 @@ exports.updateHotel = async(req, res, next) => {
         // แปลงให้เป็น Type.Object
         var id = req.params.id
         id = new ObjectId(id)
-        const hotel = await Hotel.findById(id);
+        let hotel = await Hotel.findById(id);
+        console.log(hotel)
 
         if(!hotel) {
-            res.status(400).json({success: false, error: err});
+            res.status(400).json({success: false, message: 'Cannot find hotel'});
         }
 
         //Make sure user it the reservation owner
